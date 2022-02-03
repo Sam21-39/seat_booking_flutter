@@ -49,7 +49,7 @@ class _SplashState extends State<Splash> {
     });
     Future.delayed(const Duration(milliseconds: 2500)).then(
       (value) => Get.offAll(
-        () => const Home(),
+        () => Home(),
         predicate: (route) => false,
         transition: Transition.fadeIn,
       ),

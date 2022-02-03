@@ -12,19 +12,7 @@ class Design extends StatelessWidget {
         width: size.width,
         height: size.height,
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.add_box_outlined,
-                size: size.width * 0.14,
-              ),
-            )
-          ],
-        ),
+        child: Column(),
       ),
     );
   }

@@ -1,9 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:seat_booking_flutter/design.dart';
 
 class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+  static var selectedIndex = 1.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -39,20 +40,58 @@ class Home extends StatelessWidget {
               SizedBox(
                 height: size.height * 0.02,
               ),
-              IconButton(
-                onPressed: () => Get.to(
-                  () => Design(),
-                  transition: Transition.fadeIn,
+              GestureDetector(
+                onTap: () => Get.defaultDialog(
+                  backgroundColor: Colors.teal.shade900,
+                  title: "Attention",
+                  titleStyle: const TextStyle(
+                    color: Colors.white,
+                  ),
+                  content: const Text(
+                    'Choose number of rooms',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  onConfirm: () => Get.off(Design()),
+                  actions: roomList,
                 ),
-                icon: Icon(
-                  Icons.add_circle_outline_rounded,
+                child: Icon(
+                  CupertinoIcons.add_circled,
                   size: size.width * 0.14,
                 ),
-              )
+              ),
             ],
           ),
         ),
       ),
     );
   }
+
+  final List<Widget> roomList = [
+    for (var i = 1; i < 7; i++)
+      GestureDetector(
+        onTap: () => selectedIndex.value = i,
+        child: Obx(
+          () => Container(
+            decoration: BoxDecoration(
+              color: selectedIndex.value == i
+                  ? Colors.tealAccent
+                  : Colors.tealAccent.withOpacity(0.25),
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            padding: const EdgeInsets.symmetric(
+              vertical: 2.0,
+              horizontal: 8.0,
+            ),
+            child: Text(
+              i.toString(),
+              style: TextStyle(
+                color: selectedIndex.value == i ? Colors.black : Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
+  ];
 }
