@@ -53,7 +53,9 @@ class Home extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-                  onConfirm: () => Get.off(Design()),
+                  onConfirm: () => Get.off(Design(
+                    roomNo: selectedIndex.value,
+                  )),
                   actions: roomList,
                 ),
                 child: Icon(

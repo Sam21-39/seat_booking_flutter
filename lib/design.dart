@@ -2,6 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Design extends StatelessWidget {
+  final int roomNo;
+  const Design({
+    Key? key,
+    this.roomNo = 1,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -12,7 +18,13 @@ class Design extends StatelessWidget {
         width: size.width,
         height: size.height,
         padding: const EdgeInsets.all(16.0),
-        child: Column(),
+        child: Column(
+          children: [
+            Text(
+              roomNo.toString(),
+            ),
+          ],
+        ),
       ),
     );
   }
