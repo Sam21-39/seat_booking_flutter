@@ -16,10 +16,10 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.teal,
       ),
       darkTheme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.teal,
       ),
       themeMode: ThemeMode.system,
       home: const Splash(),
@@ -64,7 +64,7 @@ class _SplashState extends State<Splash> {
           size: size.height * 0.2,
           curve: Curves.easeInOut,
           duration: const Duration(milliseconds: 1200),
-          textColor: Colors.blue,
+          textColor: Colors.teal,
         ),
       ),
     );
