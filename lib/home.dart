@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:seat_booking_flutter/design.dart';
 
 class Home extends StatelessWidget {
-  static var selectedIndex = 1.obs;
+  static var selectedIndex = 2.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -41,22 +41,21 @@ class Home extends StatelessWidget {
                 height: size.height * 0.02,
               ),
               GestureDetector(
-                onTap: () => Get.defaultDialog(
-                  backgroundColor: Colors.teal.shade900,
-                  title: "Attention",
-                  titleStyle: const TextStyle(
-                    color: Colors.white,
-                  ),
-                  content: const Text(
-                    'Choose number of rooms',
-                    style: TextStyle(
+                onTap: () => Get.dialog(
+                  AlertDialog(
+                    backgroundColor: Colors.teal.shade900,
+                    title: const Text("Attention"),
+                    titleTextStyle: const TextStyle(
                       color: Colors.white,
                     ),
+                    content: const Text(
+                      'Choose number of rooms',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    actions: roomList,
                   ),
-                  onConfirm: () => Get.off(Design(
-                    roomNo: selectedIndex.value,
-                  )),
-                  actions: roomList,
                 ),
                 child: Icon(
                   CupertinoIcons.add_circled,
@@ -71,9 +70,16 @@ class Home extends StatelessWidget {
   }
 
   final List<Widget> roomList = [
-    for (var i = 1; i < 7; i++)
+    for (var i = 2; i < 7; i++)
       GestureDetector(
-        onTap: () => selectedIndex.value = i,
+        onTap: () {
+          selectedIndex.value = i;
+          Get.to(
+            () => Design(
+              roomNo: selectedIndex.value,
+            ),
+          );
+        },
         child: Obx(
           () => Container(
             decoration: BoxDecoration(
