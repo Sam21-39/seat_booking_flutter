@@ -1,6 +1,14 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
+import 'dart:io';
+
+import 'package:path_provider/path_provider.dart';
 
 class Design extends StatefulWidget {
   final int roomNo;
@@ -18,6 +26,8 @@ class _DesignState extends State<Design> {
   late RxList seatIndex = [].obs;
   static var userSize = 150.0.obs;
   static var roomNos = 2.obs;
+
+  final designKey = GlobalKey();
 
   @override
   void initState() {
@@ -50,75 +60,82 @@ class _DesignState extends State<Design> {
         color: Colors.teal.shade100,
         child: botomNavItems(),
       ),
-      body: Container(
-        width: size.width,
-        height: size.height,
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: Obx(
-                () => GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: rowCount.value,
-                  ),
-                  itemBuilder: (_, index) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        if (!seatIndex.contains(index)) {
-                          seatIndex.add(
-                            index,
-                          );
-                        } else {
-                          seatIndex.removeWhere(
-                            (element) => element == index,
-                          );
-                        }
+      body: RepaintBoundary(
+        key: designKey,
+        child: Container(
+          width: size.width,
+          height: size.height,
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: Obx(
+                  () => GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: rowCount.value,
+                    ),
+                    itemBuilder: (_, index) => Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          if (!seatIndex.contains(index)) {
+                            seatIndex.add(
+                              index,
+                            );
+                          } else {
+                            seatIndex.removeWhere(
+                              (element) => element == index,
+                            );
+                          }
 
-                        // seatIndex.refresh();
-                        // print(seatIndex.contains(index));
-                      },
-                      child: Obx(
-                        () => Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: userSize.value,
-                              height: userSize.value,
-                              color: Colors.amber,
-                              child: seatIndex.contains(index)
-                                  ? Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 30,
-                                          height: 30,
-                                          decoration: BoxDecoration(
-                                            color: Colors.redAccent,
-                                            borderRadius:
-                                                BorderRadius.circular(100),
+                          // seatIndex.refresh();
+                          // print(seatIndex.contains(index));
+                        },
+                        child: Obx(
+                          () => Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: userSize.value > double.maxFinite
+                                    ? double.maxFinite
+                                    : userSize.value,
+                                height: userSize.value > double.maxFinite
+                                    ? double.maxFinite
+                                    : userSize.value,
+                                color: Colors.amber,
+                                child: seatIndex.contains(index)
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            width: 30,
+                                            height: 30,
+                                            decoration: BoxDecoration(
+                                              color: Colors.redAccent,
+                                              borderRadius:
+                                                  BorderRadius.circular(100),
+                                            ),
                                           ),
-                                        ),
-                                        Text('${index + 1}'),
-                                      ],
-                                    )
-                                  : Container(),
-                            ),
-                          ],
+                                          Text('${index + 1}'),
+                                        ],
+                                      )
+                                    : Container(),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
+                    itemCount: roomNos.value,
                   ),
-                  itemCount: roomNos.value,
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -197,13 +214,30 @@ class _DesignState extends State<Design> {
               ],
             ),
           ),
-          Column(
-            children: const [
-              Icon(
-                CupertinoIcons.pen,
-              ),
-              Text('Add Seat Name'),
-            ],
+          GestureDetector(
+            onTap: () async {
+              RenderRepaintBoundary boundary = designKey.currentContext
+                  ?.findRenderObject() as RenderRepaintBoundary;
+
+              final image = await boundary.toImage();
+              var byteData =
+                  await image.toByteData(format: ImageByteFormat.png);
+              var pngBytes = byteData?.buffer.asUint8List();
+
+              final val = await getApplicationDocumentsDirectory().then(
+                (value) => File('${value.path}/room_layout.png')
+                    .writeAsBytes(pngBytes as Uint8List)
+                    .then((value) => print(value.path)),
+              );
+            },
+            child: Column(
+              children: const [
+                Icon(
+                  CupertinoIcons.download_circle,
+                ),
+                Text('Save Layout'),
+              ],
+            ),
           ),
         ],
       );

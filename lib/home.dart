@@ -74,7 +74,7 @@ class Home extends StatelessWidget {
       GestureDetector(
         onTap: () {
           selectedIndex.value = i;
-          Get.to(
+          Get.off(
             () => Design(
               roomNo: selectedIndex.value,
             ),
