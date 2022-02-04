@@ -248,13 +248,13 @@ class _DesignState extends State<Design> {
                     (value) => File('${value.path}/room_layout.png')
                         .writeAsBytes(pngBytes as Uint8List)
                         .then(
-                          (value) => Get.snackbar(
-                            'Image Saved',
-                            value.path,
-                            duration: const Duration(
-                              milliseconds: 1800,
-                            ),
-                          ),
+                          (value) => print(value.path),
+                          // (value) => Get.snackbar(
+                          //   'Image Saved',
+                          //   value.path,
+                          //   duration: const Duration(
+                          //     milliseconds: 1800,
+                          //   ),
                         ),
                   );
                 },
