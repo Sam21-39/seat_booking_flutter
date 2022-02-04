@@ -15,6 +15,9 @@ class Design extends StatefulWidget {
 
 class _DesignState extends State<Design> {
   static var rowCount = 2.obs;
+  late RxList seatIndex = [].obs;
+  static var userSize = 150.0.obs;
+  static var roomNos = 2.obs;
 
   @override
   void initState() {
@@ -24,6 +27,7 @@ class _DesignState extends State<Design> {
       if (widget.roomNo > 2) {
         getRowCountDialog();
       }
+      roomNos.value = widget.roomNo;
     });
   }
 
@@ -40,6 +44,12 @@ class _DesignState extends State<Design> {
         ],
       ),
       backgroundColor: Theme.of(context).backgroundColor,
+      bottomNavigationBar: Container(
+        width: size.width,
+        height: size.height * 0.1,
+        color: Colors.teal.shade100,
+        child: botomNavItems(),
+      ),
       body: Container(
         width: size.width,
         height: size.height,
@@ -49,12 +59,62 @@ class _DesignState extends State<Design> {
             Expanded(
               child: Obx(
                 () => GridView.builder(
-                  padding: const EdgeInsets.all(8.0),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: rowCount.value,
                   ),
-                  itemBuilder: (_, index) => const FlutterLogo(),
-                  itemCount: widget.roomNo,
+                  itemBuilder: (_, index) => Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        if (!seatIndex.contains(index)) {
+                          seatIndex.add(
+                            index,
+                          );
+                        } else {
+                          seatIndex.removeWhere(
+                            (element) => element == index,
+                          );
+                        }
+
+                        // seatIndex.refresh();
+                        // print(seatIndex.contains(index));
+                      },
+                      child: Obx(
+                        () => Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: userSize.value,
+                              height: userSize.value,
+                              color: Colors.amber,
+                              child: seatIndex.contains(index)
+                                  ? Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          width: 30,
+                                          height: 30,
+                                          decoration: BoxDecoration(
+                                            color: Colors.redAccent,
+                                            borderRadius:
+                                                BorderRadius.circular(100),
+                                          ),
+                                        ),
+                                        Text('${index + 1}'),
+                                      ],
+                                    )
+                                  : Container(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  itemCount: roomNos.value,
                 ),
               ),
             )
@@ -109,5 +169,42 @@ class _DesignState extends State<Design> {
           ),
           actions: rowList,
         ),
+      );
+
+  botomNavItems() => Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          GestureDetector(
+            onTap: () => roomNos.value++,
+            child: Column(
+              children: const [
+                Icon(
+                  CupertinoIcons.add,
+                ),
+                Text('Add Rooms'),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () => roomNos.value > 2 ? roomNos.value-- : null,
+            child: Column(
+              children: const [
+                Icon(
+                  CupertinoIcons.delete,
+                ),
+                Text('Delete Rooms'),
+              ],
+            ),
+          ),
+          Column(
+            children: const [
+              Icon(
+                CupertinoIcons.pen,
+              ),
+              Text('Add Seat Name'),
+            ],
+          ),
+        ],
       );
 }
