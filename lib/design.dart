@@ -204,10 +204,10 @@ class _DesignState extends State<Design> {
                 onTap: () {
                   switch (rowCount.value) {
                     case 2:
-                      roomNos.value < 6 ? roomNos.value++ : null;
+                      roomNos.value < 4 ? roomNos.value++ : null;
                       break;
                     case 3:
-                      roomNos.value < 12 ? roomNos.value++ : null;
+                      roomNos.value < 9 ? roomNos.value++ : null;
                       break;
                     case 4:
                       roomNos.value < 16 ? roomNos.value++ : null;
@@ -247,7 +247,15 @@ class _DesignState extends State<Design> {
                   final val = await getApplicationDocumentsDirectory().then(
                     (value) => File('${value.path}/room_layout.png')
                         .writeAsBytes(pngBytes as Uint8List)
-                        .then((value) => print(value.path)),
+                        .then(
+                          (value) => Get.snackbar(
+                            'Image Saved',
+                            value.path,
+                            duration: const Duration(
+                              milliseconds: 1800,
+                            ),
+                          ),
+                        ),
                   );
                 },
                 child: Column(

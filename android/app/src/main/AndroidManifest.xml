@@ -2,7 +2,7 @@
     package="com.spofficial.seat_booking_flutter">
    <application
         android:label="seat_booking_flutter"
-        android:name="${applicationName}"
+        android:name="Seat Booking Flutter"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
