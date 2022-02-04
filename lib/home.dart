@@ -41,21 +41,8 @@ class Home extends StatelessWidget {
                 height: size.height * 0.02,
               ),
               GestureDetector(
-                onTap: () => Get.dialog(
-                  AlertDialog(
-                    backgroundColor: Colors.teal.shade900,
-                    title: const Text("Attention"),
-                    titleTextStyle: const TextStyle(
-                      color: Colors.white,
-                    ),
-                    content: const Text(
-                      'Choose number of rooms',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    actions: roomList,
-                  ),
+                onTap: () => Get.to(
+                  () => Design(),
                 ),
                 child: Icon(
                   CupertinoIcons.add_circled,
@@ -68,38 +55,4 @@ class Home extends StatelessWidget {
       ),
     );
   }
-
-  final List<Widget> roomList = [
-    for (var i = 2; i < 7; i++)
-      GestureDetector(
-        onTap: () {
-          selectedIndex.value = i;
-          Get.off(
-            () => Design(
-              roomNo: selectedIndex.value,
-            ),
-          );
-        },
-        child: Obx(
-          () => Container(
-            decoration: BoxDecoration(
-              color: selectedIndex.value == i
-                  ? Colors.tealAccent
-                  : Colors.tealAccent.withOpacity(0.25),
-              borderRadius: BorderRadius.circular(16.0),
-            ),
-            padding: const EdgeInsets.symmetric(
-              vertical: 2.0,
-              horizontal: 8.0,
-            ),
-            child: Text(
-              i.toString(),
-              style: TextStyle(
-                color: selectedIndex.value == i ? Colors.black : Colors.white,
-              ),
-            ),
-          ),
-        ),
-      ),
-  ];
 }

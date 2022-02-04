@@ -11,10 +11,8 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 class Design extends StatefulWidget {
-  final int roomNo;
   const Design({
     Key? key,
-    this.roomNo = 2,
   }) : super(key: key);
 
   @override
@@ -24,7 +22,7 @@ class Design extends StatefulWidget {
 class _DesignState extends State<Design> {
   static var rowCount = 2.obs;
   late RxList seatIndex = [].obs;
-  static var userSize = 150.0.obs;
+  static var userSize = 1.0.obs;
   static var roomNos = 2.obs;
 
   final designKey = GlobalKey();
@@ -34,10 +32,9 @@ class _DesignState extends State<Design> {
     super.initState();
 
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      if (widget.roomNo > 2) {
+      if (roomNos.value > 2) {
         getRowCountDialog();
       }
-      roomNos.value = widget.roomNo;
     });
   }
 
@@ -53,10 +50,9 @@ class _DesignState extends State<Design> {
           ),
         ],
       ),
-      backgroundColor: Theme.of(context).backgroundColor,
       bottomNavigationBar: Container(
         width: size.width,
-        height: size.height * 0.1,
+        height: size.height * 0.14,
         color: Colors.teal.shade100,
         child: botomNavItems(),
       ),
@@ -65,6 +61,7 @@ class _DesignState extends State<Design> {
         child: Container(
           width: size.width,
           height: size.height,
+          color: Theme.of(context).backgroundColor,
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
@@ -73,6 +70,7 @@ class _DesignState extends State<Design> {
                   () => GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: rowCount.value,
+                      childAspectRatio: 1.0,
                     ),
                     itemBuilder: (_, index) => Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -92,40 +90,31 @@ class _DesignState extends State<Design> {
                           // print(seatIndex.contains(index));
                         },
                         child: Obx(
-                          () => Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: userSize.value > double.maxFinite
-                                    ? double.maxFinite
-                                    : userSize.value,
-                                height: userSize.value > double.maxFinite
-                                    ? double.maxFinite
-                                    : userSize.value,
-                                color: Colors.amber,
-                                child: seatIndex.contains(index)
-                                    ? Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            width: 30,
-                                            height: 30,
-                                            decoration: BoxDecoration(
-                                              color: Colors.redAccent,
-                                              borderRadius:
-                                                  BorderRadius.circular(100),
-                                            ),
+                          () => Transform.scale(
+                            scale: userSize.value,
+                            child: Container(
+                              color: Colors.amber,
+                              child: seatIndex.contains(index)
+                                  ? Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          width: 30,
+                                          height: 30,
+                                          decoration: BoxDecoration(
+                                            color: Colors.redAccent,
+                                            borderRadius:
+                                                BorderRadius.circular(100),
                                           ),
-                                          Text('${index + 1}'),
-                                        ],
-                                      )
-                                    : Container(),
-                              ),
-                            ],
+                                        ),
+                                        Text('${index + 1}'),
+                                      ],
+                                    )
+                                  : Container(),
+                            ),
                           ),
                         ),
                       ),
@@ -146,6 +135,7 @@ class _DesignState extends State<Design> {
       GestureDetector(
         onTap: () {
           rowCount.value = i;
+          roomNos.value = 2;
           Get.close(1);
         },
         child: Obx(
@@ -188,56 +178,88 @@ class _DesignState extends State<Design> {
         ),
       );
 
-  botomNavItems() => Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+  botomNavItems() => Column(
         children: [
-          GestureDetector(
-            onTap: () => roomNos.value++,
-            child: Column(
-              children: const [
-                Icon(
-                  CupertinoIcons.add,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Scale'),
+              Obx(
+                () => CupertinoSlider(
+                  max: 1.0,
+                  min: 0.4,
+                  value: userSize.value,
+                  onChanged: (val) {
+                    userSize.value = val;
+                  },
                 ),
-                Text('Add Rooms'),
-              ],
-            ),
+              ),
+            ],
           ),
-          GestureDetector(
-            onTap: () => roomNos.value > 2 ? roomNos.value-- : null,
-            child: Column(
-              children: const [
-                Icon(
-                  CupertinoIcons.delete,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  switch (rowCount.value) {
+                    case 2:
+                      roomNos.value < 6 ? roomNos.value++ : null;
+                      break;
+                    case 3:
+                      roomNos.value < 12 ? roomNos.value++ : null;
+                      break;
+                    case 4:
+                      roomNos.value < 16 ? roomNos.value++ : null;
+                      break;
+                  }
+                },
+                child: Column(
+                  children: const [
+                    Icon(
+                      CupertinoIcons.add,
+                    ),
+                    Text('Add Rooms'),
+                  ],
                 ),
-                Text('Delete Rooms'),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: () async {
-              RenderRepaintBoundary boundary = designKey.currentContext
-                  ?.findRenderObject() as RenderRepaintBoundary;
-
-              final image = await boundary.toImage();
-              var byteData =
-                  await image.toByteData(format: ImageByteFormat.png);
-              var pngBytes = byteData?.buffer.asUint8List();
-
-              final val = await getApplicationDocumentsDirectory().then(
-                (value) => File('${value.path}/room_layout.png')
-                    .writeAsBytes(pngBytes as Uint8List)
-                    .then((value) => print(value.path)),
-              );
-            },
-            child: Column(
-              children: const [
-                Icon(
-                  CupertinoIcons.download_circle,
+              ),
+              GestureDetector(
+                onTap: () => roomNos.value > 2 ? roomNos.value-- : null,
+                child: Column(
+                  children: const [
+                    Icon(
+                      CupertinoIcons.delete,
+                    ),
+                    Text('Delete Rooms'),
+                  ],
                 ),
-                Text('Save Layout'),
-              ],
-            ),
+              ),
+              GestureDetector(
+                onTap: () async {
+                  RenderRepaintBoundary boundary = designKey.currentContext
+                      ?.findRenderObject() as RenderRepaintBoundary;
+
+                  final image = await boundary.toImage();
+                  var byteData =
+                      await image.toByteData(format: ImageByteFormat.png);
+                  var pngBytes = byteData?.buffer.asUint8List();
+
+                  final val = await getApplicationDocumentsDirectory().then(
+                    (value) => File('${value.path}/room_layout.png')
+                        .writeAsBytes(pngBytes as Uint8List)
+                        .then((value) => print(value.path)),
+                  );
+                },
+                child: Column(
+                  children: const [
+                    Icon(
+                      CupertinoIcons.download_circle,
+                    ),
+                    Text('Save Layout'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       );
